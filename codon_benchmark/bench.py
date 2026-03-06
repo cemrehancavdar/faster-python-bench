@@ -1,8 +1,8 @@
 """N-body and spectral-norm benchmarks for Codon.
 
 Codon-compatible: no json, no sys.implementation, no f-strings with expressions.
-Build: ~/.codon/bin/codon build -release -o bench_codon bench_codon.py
-Run:   ./bench_codon
+Build: ~/.codon/bin/codon build -release -o bench_codon codon_benchmark/bench.py
+Run:   DYLD_LIBRARY_PATH=~/.codon/lib/codon ./bench_codon
 """
 
 import math

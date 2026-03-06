@@ -3,7 +3,7 @@
 Taichi compiles @ti.kernel decorated functions to native machine code via LLVM.
 Similar to Numba but with explicit kernel/func distinction and auto-parallelization.
 
-Usage: uv run bench_taichi.py
+Usage: /tmp/taichi-venv/bin/python taichi_benchmark/bench.py
 """
 
 import statistics
