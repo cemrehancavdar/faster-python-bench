@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# uv
+.venv/
+
+# Data (regeneratable)
+data/events.json
+
+# Results
+results/
+
+# Build artifacts — Cython generated C files
+cython_benchmark/*.c
+# Cython annotation HTML
+cython_benchmark/*.html
+# Dynamic libraries and object files
+*.dylib
+*.o
+
+# Cython
+cython_benchmark/build/
+
+# Mypyc
+mypyc_benchmark/build/
+
+# Rust
+rust_benchmark/target/
+rust_benchmark/.venv/
+
+# Caches
+.mypy_cache/
+.ruff_cache/
+
+# Rodney
+.rodney/
+
+# Agent
+.agent/
+
+# OS
+.DS_Store

@@ -1,0 +1,10 @@
+[workspace]
+channels = ["https://conda.modular.com/max-nightly", "conda-forge"]
+name = "mojo_bench"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+mojo = ">=0.26.2.0.dev2026022605,<0.27"

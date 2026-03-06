@@ -1,0 +1,66 @@
+[project]
+name = "faster-python-bench"
+version = "0.1.0"
+description = "Benchmark: every way to make Python faster"
+requires-python = ">=3.14"
+dependencies = [
+    "orjson>=3.11.7",
+]
+
+[project.optional-dependencies]
+# Core benchmarking
+bench = [
+    "orjson>=3.10",
+]
+# Numba rung
+numba = [
+    "numba>=0.60",
+    "numpy>=1.26",
+]
+# Cython rung
+cython = [
+    "cython>=3.0",
+    "setuptools>=70",
+]
+# Mypyc rung
+mypyc = [
+    "mypy>=1.13",
+]
+# Rust extension (PyO3 via maturin)
+pyo3 = [
+    "maturin>=1.7",
+]
+# Dev/lint
+dev = [
+    "ruff>=0.8",
+    "pyright>=1.1",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+# Cython pure Python mode files use cython.declare() which creates C variables
+# that ruff can't see. Also exclude Codon/Taichi standalone scripts.
+exclude = [
+    "cython_benchmark/nbody.py",
+    "cython_benchmark/spectral_norm.py",
+    "cython_benchmark/pipeline.py",
+    "cython_benchmark/pipeline_raw.py",
+    "codon_benchmark/bench.py",
+    "taichi_benchmark/bench.py",
+    "bench_cpython_versions.py",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Build instructions in docstrings exceed line length
+"mypyc_benchmark/nbody.py" = ["E501"]
+"mypyc_benchmark/spectral_norm.py" = ["E501"]
+# Benchmarks Game reference implementation — don't modify
+"baseline/spectral_norm.py" = ["B905"]
+
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "basic"
