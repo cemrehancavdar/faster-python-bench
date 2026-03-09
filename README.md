@@ -154,7 +154,7 @@ verify_correctness.py   Correctness verification against reference values
 
 ## Acknowledgment
 
-AI (Claude) was used during development, mostly for QA and fact-checking.
+Claude was used for fact-checking and for producing more accurate code in languages I'm less familiar with (Rust, Mojo).
 
 ## License
 
