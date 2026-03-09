@@ -152,6 +152,10 @@ bench_cpython_versions.py  CPython version comparison (self-contained)
 verify_correctness.py   Correctness verification against reference values
 ```
 
+## Acknowledgment
+
+AI (Claude) was used during development, mostly for QA and fact-checking.
+
 ## License
 
 Code is MIT. Benchmark numbers are specific to Apple M4 Pro — your hardware will differ.
