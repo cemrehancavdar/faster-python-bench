@@ -2,30 +2,30 @@
 
 Cython's failure mode is the most dangerous one on the entire optimization ladder: **your code works, it's just 12x slower than it should be, and nothing tells you.**
 
-My first Cython n-body got **10.5x**. My final version got **124x**. Same algorithm, same data, same Cython. Here's what happened between them.
+My first Cython n-body got **10.5x**. My final version got **124x**. Same Cython, same compiler. The difference was a numerical optimization and two Cython-specific landmines.
 
 ---
 
-## Landmine 1: `** 0.5` vs `sqrt()` -- 7x penalty
+## Numerical optimization: `** (-1.5)` → `sqrt()` + arithmetic
 
-The n-body inner loop needs `1 / distance`. Distance is `sqrt(dx^2 + dy^2 + dz^2)`. In Python you might write:
-
-```python
-dist = dsq ** 0.5
-```
-
-In Cython, even with typed `cython.double` variables, `** 0.5` in an expression like `total += x ** 0.5` generates significantly slower code than a direct `sqrt()` call — Cython may route it through complex-number power dispatch depending on the expression context. `sqrt()` from `libc.math` compiles to a single hardware instruction:
+The baseline computes gravitational force magnitude as:
 
 ```python
-from cython.cimports.libc.math import sqrt
-dist = sqrt(dsq)
+mag = dt * ((dx*dx + dy*dy + dz*dz) ** (-1.5))
 ```
 
-This single change: **7x speedup**. No warning, no error, no yellow line in the Cython annotation report. The `**` operator just silently chose the slow path.
+This calls `pow(x, -1.5)` — a general-purpose power function. Decomposing it into `sqrt()` + arithmetic is much faster:
+
+```python
+dsq = dx*dx + dy*dy + dz*dz
+mag = dt / (dsq * sqrt(dsq))
+```
+
+This isn't a Cython issue — even in pure C at `-O2`, `pow(x, -1.5)` is 10x slower than `1/(x * sqrt(x))`. It's a standard numerical optimization you'd do in any language.
 
 ---
 
-## Landmine 2: Pair index arrays vs nested loops -- 2x penalty
+## Landmine 1: Pair index arrays vs nested loops -- 2x penalty
 
 The algorithm needs to iterate over all pairs (i, j) where i < j. Two ways:
 
@@ -47,7 +47,7 @@ Version A looks clever -- flatten the pair iteration into a single loop. But the
 
 ---
 
-## Landmine 3: Missing `@cython.cdivision(True)` -- silent penalty
+## Landmine 2: Missing `@cython.cdivision(True)` -- silent penalty
 
 Without this decorator, Cython inserts a zero-division check before every floating-point divide. In the inner loop that runs 5 million times per benchmark run, that's 5 million branches that are never taken.
 
@@ -65,7 +65,7 @@ All of these, applied together:
 
 - `@cython.cfunc` instead of `@cython.ccall`
 - `cython.double[5]` C arrays instead of Python lists
-- `sqrt()` from `libc.math` instead of `** 0.5`
+- `sqrt()` + arithmetic instead of `** (-1.5)` (numerical optimization, not Cython-specific)
 - Nested loops instead of index arrays
 - `@cython.cdivision(True)`
 - Local caching of struct fields

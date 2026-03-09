@@ -10,9 +10,10 @@ arrays — the compiler can unroll the constant-bound loops). No community
 Cython n-body implementations exist, so this was written as a translation
 of the baseline with Cython type annotations.
 
-Key insight discovered during development: using dsq**0.5 instead of
-libc.math.sqrt costs 7x silently. Using pair-index arrays instead of
-nested for loops costs 2x silently. See blog post for the full DX story.
+Key insights discovered during development: decomposing ** (-1.5) into
+sqrt() + arithmetic gives ~7x speedup (true in any language, not Cython-specific).
+Using pair-index arrays instead of nested for loops costs 2x silently.
+See blog post for the full DX story.
 
 Correctness: Verified against official expected outputs (verify_correctness.py):
   N=1000:  energy_before=-0.169075164, energy_after=-0.169087605  [PASS]
