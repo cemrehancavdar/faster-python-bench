@@ -143,7 +143,7 @@ pypy_benchmark/         PyPy (all 3, identical to baseline — JIT does the work
 rust_benchmark/         Rust/PyO3 (all 3, single lib.rs)
 codon_benchmark/        Codon standalone (n-body + spectral-norm)
 taichi_benchmark/       Taichi standalone (n-body + spectral-norm, Python 3.13)
-mojo_benchmark/         Mojo standalone (n-body + spectral-norm, via pixi)
+mojo_benchmark/         Mojo standalone (n-body + spectral-norm)
 data/                   Test data generator (100K events)
 docs/                   Deep-dive writeups
 bench.py                JSON pipeline benchmark runner
