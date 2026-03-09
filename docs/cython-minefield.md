@@ -8,21 +8,28 @@ My first Cython n-body got **10.5x**. My final version got **124x**. Same Cython
 
 ## Landmine 1: `**` operator with float exponents -- 7x penalty
 
-The baseline computes gravitational force magnitude as:
+Cython's `**` operator with float exponents is dramatically slower than calling `sqrt()` directly. A minimal benchmark with typed `cython.double` variables and `-ffast-math`:
+
+| Expression | 50M iterations |
+|---|---|
+| `x ** 0.5` | 0.451s |
+| `sqrt(x)` | 0.011s |
+
+**40x difference** for the same computation. In pure CPython, they run at the same speed. Cython's `**` goes through a slow dispatch path instead of compiling to C's `sqrt()`.
+
+The n-body baseline uses `** (-1.5)`, which can't be replaced with a single `sqrt()` call — it required decomposing the formula:
 
 ```python
+# baseline: slow
 mag = dt * ((dx*dx + dy*dy + dz*dz) ** (-1.5))
-```
 
-Even with typed `cython.double` variables and `-ffast-math`, Cython's `**` operator with a float exponent goes through a slow dispatch path instead of compiling to a direct C `pow()` call. Decomposing it into `sqrt()` + arithmetic avoids this entirely:
-
-```python
+# fix: sqrt() + arithmetic
 from cython.cimports.libc.math import sqrt
 dsq = dx*dx + dy*dy + dz*dz
 mag = dt / (dsq * sqrt(dsq))
 ```
 
-This single change: **7x speedup**. No warning, no error, no yellow line in the Cython annotation report.
+**7x speedup on the overall benchmark.** No warning, no error, no yellow line in the Cython annotation report.
 
 ---
 
