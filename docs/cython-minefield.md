@@ -14,7 +14,7 @@ The n-body inner loop needs `1 / distance`. Distance is `sqrt(dx^2 + dy^2 + dz^2
 dist = dsq ** 0.5
 ```
 
-In Cython with typed `cython.double` variables, `** 0.5` generates a call to C's `pow(dsq, 0.5)` — a general-purpose function that handles arbitrary exponents. With untyped variables, it falls back to Python's generic `pow()` which is even slower. Either way, `sqrt()` from `libc.math` is a single hardware instruction:
+In Cython, even with typed `cython.double` variables, `** 0.5` routes through Cython's complex-number power dispatch — struct conversions, branch checks, and error handling before eventually calling C's `pow()`. With untyped variables, it falls back to Python's generic `pow()` which is even slower. Either way, `sqrt()` from `libc.math` compiles to a single hardware instruction:
 
 ```python
 from cython.cimports.libc.math import sqrt
