@@ -7,7 +7,7 @@ Three tools promise to compile Python (or Python-like code) to native machine co
 | CPython 3.14 | 1,242ms | 1.0x | 14,046ms | 1.0x |
 | Codon 0.19 | 47ms | **26x** | 99ms | **142x** |
 | Mojo nightly | 16ms | **78x** | 118ms | **119x** |
-| Taichi 1.7 | 16ms | **78x** | 74ms | **190x** |
+| Taichi 1.7 | 16ms | **78x** | 71ms | **198x** |
 
 ---
 
@@ -15,7 +15,7 @@ Three tools promise to compile Python (or Python-like code) to native machine co
 
 Codon compiles Python to native code via LLVM, ahead-of-time. You write `.py` files, run `codon build -release`, get a binary. On paper: Python syntax, C speed.
 
-In practice: Codon implements its *own* Python — it doesn't use CPython at all. `import json` doesn't work. `sys.version_info` doesn't exist. Standard library coverage is incomplete. You can't call it from CPython via import; it produces standalone binaries. I had to strip out all stdlib imports and rewrite I/O to get benchmarks to compile. The numbers are real — 26x and 142x — but you're writing for Codon's runtime, not Python's.
+In practice: Codon implements its *own* Python — it doesn't use CPython at all. `import json` doesn't work. `sys.version_info` doesn't exist. Standard library coverage is incomplete. Codon does have a JIT decorator and Python extension backend for limited CPython interop, but the primary mode is standalone binaries. I had to strip out all stdlib imports and rewrite I/O to get benchmarks to compile. The numbers are real — 26x and 142x — but you're writing for Codon's runtime, not Python's.
 
 You also need `DYLD_LIBRARY_PATH=~/.codon/lib/codon` to run the binary on macOS. And `round()` produces fewer decimal places than CPython (e.g. `round(3.14159..., 9)` gives `3.14159` instead of `3.141592654`). Small things, but they add up.
 
@@ -69,7 +69,6 @@ Taichi was built for physics simulations and GPU computing. You write `@ti.kerne
 ```python
 @ti.kernel
 def nbody_advance(n: ti.i32):
-    ti.loop_config(serialize=True)
     for _step in range(n):
         for i in range(NUM_BODIES):
             for j in range(i + 1, NUM_BODIES):
@@ -78,12 +77,12 @@ def nbody_advance(n: ti.i32):
                 mag = dt / (dsq * ti.sqrt(dsq))
 ```
 
-78x on n-body, 190x on spectral-norm — the fastest spectral-norm result after NumPy.
+78x on n-body, 198x on spectral-norm — the fastest spectral-norm result after NumPy. Taichi auto-parallelizes eligible loops by default; the n-body step loop uses `ti.loop_config(serialize=True)` because each step depends on the previous (correctness, not fairness). The spectral-norm inner loops are embarrassingly parallel and benefit from Taichi's auto-parallelization.
 
 ### Gotchas
 
 - **`from __future__ import annotations` silently breaks all `@ti.kernel` decorators.** Taichi checks annotation types by `id()`, and PEP 563 turns them into strings. The error says `ValueError: Invalid data type ti.f64` with no hint that `__future__` annotations is the cause.
-- **`ti.loop_config(serialize=True)` is needed on every loop** to prevent auto-parallelization (which would make single-threaded comparison unfair).
+- **N-body requires `ti.loop_config(serialize=True)` on the step loop** because each step depends on the previous. Spectral-norm's inner loops are embarrassingly parallel and run without serialization — Taichi's auto-parallelization is a legitimate feature.
 - **No Python 3.14 wheels.** Taichi 1.7.4 supports up to Python 3.13. Numbers above were benchmarked on a separate Python 3.13 environment.
 
 **DX verdict: best spectral-norm performance of any non-NumPy tool. But the decorator-based API has surprising failure modes, and you're locked to Taichi's data containers.**

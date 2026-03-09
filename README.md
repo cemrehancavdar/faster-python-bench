@@ -2,7 +2,7 @@
 
 Companion repo for [The Optimization Ladder](https://cemrehancavdar.com/2026/03/06/optimization-ladder/). Every benchmark from the blog post — reproduced, verified, and runnable.
 
-All benchmarks on Apple M4 Pro, CPython 3.14 baseline, median of 5 runs. Every implementation produces identical output — verified against official Benchmarks Game expected values to 9 decimal places.
+All benchmarks on Apple M4 Pro, CPython 3.14 baseline, median of 5 runs. Every implementation produces identical output — verified against official Benchmarks Game expected values (minor floating-point ordering differences in the last decimal place are expected across compilers).
 
 ## Results
 
@@ -15,7 +15,7 @@ All benchmarks on Apple M4 Pro, CPython 3.14 baseline, median of 5 runs. Every i
 | CPython 3.14t | 1,513ms | 0.82x | GIL-free but slower single-thread |
 | Mypyc | 518ms | 2.4x | Type annotations |
 | PyPy | 98ms | 13x | Ecosystem compatibility |
-| Codon | 47ms | 26x | Separate runtime, no stdlib |
+| Codon | 47ms | 26x | Separate runtime, limited stdlib |
 | Numba | 22ms | 56x | `@njit` + NumPy arrays |
 | Taichi | 16ms | 78x | Python 3.13 only (no 3.14 wheels) |
 | Mojo | 16ms | 78x | New language + toolchain |
@@ -31,12 +31,12 @@ All benchmarks on Apple M4 Pro, CPython 3.14 baseline, median of 5 runs. Every i
 | CPython 3.14t | 14,551ms | 0.97x | GIL-free but slower single-thread |
 | Mypyc | 990ms | 14x | Type annotations |
 | PyPy | 1,065ms | 13x | Ecosystem compatibility |
-| Codon | 99ms | 142x | Separate runtime, no stdlib |
+| Codon | 99ms | 142x | Separate runtime, limited stdlib |
 | Numba | 104ms | 135x | `@njit` + NumPy arrays |
 | Mojo | 118ms | 119x | New language + toolchain |
 | Rust (PyO3) | 91ms | 154x | Learning Rust |
 | Cython | 142ms | 99x | C knowledge + landmines |
-| Taichi | 74ms | 190x | Python 3.13 only (no 3.14 wheels) |
+| Taichi | 71ms | 198x | Python 3.13 only (no 3.14 wheels) |
 | NumPy | 27ms | 520x | Knowing NumPy + O(N^2) memory |
 
 ### JSON Pipeline (100K events, end-to-end from raw bytes)
