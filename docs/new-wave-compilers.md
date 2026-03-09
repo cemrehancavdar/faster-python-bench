@@ -69,6 +69,7 @@ Taichi was built for physics simulations and GPU computing. You write `@ti.kerne
 ```python
 @ti.kernel
 def nbody_advance(n: ti.i32):
+    ti.loop_config(serialize=True)  # steps are sequential
     for _step in range(n):
         for i in range(NUM_BODIES):
             for j in range(i + 1, NUM_BODIES):
