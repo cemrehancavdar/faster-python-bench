@@ -10,8 +10,9 @@ arrays — the compiler can unroll the constant-bound loops). No community
 Cython n-body implementations exist, so this was written as a translation
 of the baseline with Cython type annotations.
 
-Key insights discovered during development: decomposing ** (-1.5) into
-sqrt() + arithmetic gives ~7x speedup (true in any language, not Cython-specific).
+Key insights discovered during development: Cython's ** operator with float
+exponents goes through slow dispatch even with typed doubles and -ffast-math.
+Decomposing ** (-1.5) into sqrt() + arithmetic: 7x speedup.
 Using pair-index arrays instead of nested for loops costs 2x silently.
 See blog post for the full DX story.
 

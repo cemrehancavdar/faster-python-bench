@@ -2,7 +2,7 @@
 
 The baseline is already well-typed. Key mypyc optimizations:
 - Explicit type annotations on all locals for C primitive operations
-- sqrt() + arithmetic instead of ** (-1.5) (standard numerical optimization)
+- sqrt() + arithmetic instead of ** (-1.5) (avoids slow power dispatch)
 - Pre-declared loop variables
 
 Build: uv run python -c "from mypyc.build import mypycify; from setuptools import setup; setup(packages=[], ext_modules=mypycify(['mypyc_benchmark/nbody.py']))" build_ext --inplace

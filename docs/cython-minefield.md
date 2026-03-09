@@ -2,11 +2,11 @@
 
 Cython's failure mode is the most dangerous one on the entire optimization ladder: **your code works, it's just 12x slower than it should be, and nothing tells you.**
 
-My first Cython n-body got **10.5x**. My final version got **124x**. Same Cython, same compiler. The difference was a numerical optimization and two Cython-specific landmines.
+My first Cython n-body got **10.5x**. My final version got **124x**. Same Cython, same compiler. Here's what happened between them.
 
 ---
 
-## Numerical optimization: `** (-1.5)` → `sqrt()` + arithmetic
+## Landmine 1: `**` operator with float exponents -- 7x penalty
 
 The baseline computes gravitational force magnitude as:
 
@@ -14,18 +14,19 @@ The baseline computes gravitational force magnitude as:
 mag = dt * ((dx*dx + dy*dy + dz*dz) ** (-1.5))
 ```
 
-This calls `pow(x, -1.5)` — a general-purpose power function. Decomposing it into `sqrt()` + arithmetic is much faster:
+Even with typed `cython.double` variables and `-ffast-math`, Cython's `**` operator with a float exponent goes through a slow dispatch path instead of compiling to a direct C `pow()` call. Decomposing it into `sqrt()` + arithmetic avoids this entirely:
 
 ```python
+from cython.cimports.libc.math import sqrt
 dsq = dx*dx + dy*dy + dz*dz
 mag = dt / (dsq * sqrt(dsq))
 ```
 
-This isn't a Cython issue — even in pure C at `-O2`, `pow(x, -1.5)` is 10x slower than `1/(x * sqrt(x))`. It's a standard numerical optimization you'd do in any language.
+This single change: **7x speedup**. No warning, no error, no yellow line in the Cython annotation report.
 
 ---
 
-## Landmine 1: Pair index arrays vs nested loops -- 2x penalty
+## Landmine 2: Pair index arrays vs nested loops -- 2x penalty
 
 The algorithm needs to iterate over all pairs (i, j) where i < j. Two ways:
 
@@ -47,7 +48,7 @@ Version A looks clever -- flatten the pair iteration into a single loop. But the
 
 ---
 
-## Landmine 2: Missing `@cython.cdivision(True)` -- silent penalty
+## Landmine 3: Missing `@cython.cdivision(True)` -- silent penalty
 
 Without this decorator, Cython inserts a zero-division check before every floating-point divide. In the inner loop that runs 5 million times per benchmark run, that's 5 million branches that are never taken.
 
@@ -65,7 +66,7 @@ All of these, applied together:
 
 - `@cython.cfunc` instead of `@cython.ccall`
 - `cython.double[5]` C arrays instead of Python lists
-- `sqrt()` + arithmetic instead of `** (-1.5)` (numerical optimization, not Cython-specific)
+- `sqrt()` + arithmetic instead of `** (-1.5)` (Cython's `**` dispatch is slow)
 - Nested loops instead of index arrays
 - `@cython.cdivision(True)`
 - Local caching of struct fields
