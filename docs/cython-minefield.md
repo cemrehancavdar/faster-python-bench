@@ -31,6 +31,13 @@ mag = dt / (dsq * sqrt(dsq))
 
 **7x speedup on the overall benchmark.** No warning, no error, no yellow line in the Cython annotation report.
 
+Reproduce the microbenchmark yourself:
+
+```bash
+uv run --extra cython python cython_benchmark/setup_pow_vs_sqrt.py build_ext --inplace
+uv run python -c "from cython_benchmark.bench_pow_vs_sqrt_compiled import main; main()"
+```
+
 ---
 
 ## Landmine 2: Pair index arrays vs nested loops -- 2x penalty
