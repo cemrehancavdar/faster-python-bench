@@ -177,7 +177,7 @@ def sn_eval_AtA_times_u(u: ti.template(), out: ti.template(), tmp: ti.template()
     for i in range(SPECTRAL_N):
         s: ti.f64 = 0.0
         for j in range(SPECTRAL_N):
-            s += sn_eval_A(i, j) * u[i, j]  # u[j] but need field access
+            s += sn_eval_A(i, j) * u[j]
         tmp[i] = s
     # out = A^T * tmp
     ti.loop_config(serialize=True)
@@ -199,7 +199,8 @@ def sn_full_run() -> ti.f64:
         sn_u[i] = 1.0
         sn_v[i] = 0.0
 
-    # 10 power iterations
+    # 10 power iterations (must be serial -- each depends on the previous)
+    ti.loop_config(serialize=True)
     for _iter in range(10):
         # v = A^T * A * u
         # tmp = A * u
