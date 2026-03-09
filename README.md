@@ -101,20 +101,50 @@ uv run python -c "from mypyc.build import mypycify; from setuptools import setup
 cd rust_benchmark && VIRTUAL_ENV=../.venv uv tool run maturin develop --release && cd ..
 ```
 
+### Running standalone compilers
+
+These tools can't be imported as Python modules — they compile and run as standalone binaries.
+
+```bash
+# Codon (build + run)
+~/.codon/bin/codon build -release -o /tmp/bench_codon codon_benchmark/bench.py
+DYLD_LIBRARY_PATH=~/.codon/lib/codon /tmp/bench_codon
+
+# Taichi (requires Python 3.13 venv with taichi installed)
+/tmp/taichi-venv/bin/python taichi_benchmark/bench.py
+
+# Mojo (via pixi, from mojo_benchmark/ directory)
+cd mojo_benchmark && pixi run mojo run bench.mojo && cd ..
+```
+
 ## Project structure
 
+Every benchmark directory follows a consistent layout: one file per benchmark problem,
+plus a runner for standalone tools that can't be imported as Python modules.
+
 ```
-baseline/               CPython reference implementations
-cython_benchmark/       Cython pure Python mode (dict + yyjson + n-body + spectral-norm)
-numba_benchmark/        Numba @njit implementations
-numpy_benchmark/        NumPy vectorized implementations
-mypyc_benchmark/        Mypyc-compiled implementations
-pypy_benchmark/         PyPy-compatible pipeline (pure Python)
-rust_benchmark/         Rust/PyO3 extensions
-mojo_benchmark/         Mojo benchmarks (via pixi)
-codon_benchmark/        Standalone Codon benchmarks (n-body + spectral-norm)
-taichi_benchmark/       Standalone Taichi benchmarks (requires Python 3.13)
-data/                   Test data generator
+xxx_benchmark/
+  nbody.py              N-body algorithm   (exports run_benchmark / run_nbody)
+  spectral_norm.py      Spectral-norm      (exports run_benchmark / run_spectral)
+  pipeline.py           JSON pipeline      (exports run_pipeline, where applicable)
+  bench.py              Runner for standalone tools (Codon, Taichi)
+  # + build artifacts, setup scripts, toolchain files as needed
+```
+
+### Directory listing
+
+```
+baseline/               CPython reference implementations (all 3 benchmarks)
+numba_benchmark/        Numba @njit (all 3 benchmarks)
+cython_benchmark/       Cython pure Python mode (all 3 + yyjson variant)
+numpy_benchmark/        NumPy vectorized (spectral-norm only)
+mypyc_benchmark/        Mypyc-compiled (all 3 benchmarks)
+pypy_benchmark/         PyPy (all 3, identical to baseline — JIT does the work)
+rust_benchmark/         Rust/PyO3 (all 3, single lib.rs)
+codon_benchmark/        Codon standalone (n-body + spectral-norm)
+taichi_benchmark/       Taichi standalone (n-body + spectral-norm, Python 3.13)
+mojo_benchmark/         Mojo standalone (n-body + spectral-norm, via pixi)
+data/                   Test data generator (100K events)
 docs/                   Deep-dive writeups
 bench.py                JSON pipeline benchmark runner
 bench_all.py            Unified runner for all 3 suites

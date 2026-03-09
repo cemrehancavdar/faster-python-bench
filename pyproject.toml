@@ -46,8 +46,8 @@ exclude = [
     "cython_benchmark/spectral_norm.py",
     "cython_benchmark/pipeline.py",
     "cython_benchmark/pipeline_raw.py",
-    "codon_benchmark/bench.py",
-    "taichi_benchmark/bench.py",
+    "codon_benchmark/*.py",
+    "taichi_benchmark/*.py",
     "bench_cpython_versions.py",
 ]
 
@@ -60,6 +60,7 @@ select = ["E", "F", "W", "I", "UP", "B", "SIM"]
 "mypyc_benchmark/spectral_norm.py" = ["E501"]
 # Benchmarks Game reference implementation — don't modify
 "baseline/spectral_norm.py" = ["B905"]
+"pypy_benchmark/spectral_norm.py" = ["B905"]
 
 [tool.pyright]
 pythonVersion = "3.10"
