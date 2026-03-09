@@ -6,7 +6,7 @@ My first Cython n-body got **10.5x**. My final version got **124x**. Same algori
 
 ---
 
-## Landmine 1: `** 0.5` vs `sqrt()` -- 5x penalty
+## Landmine 1: `** 0.5` vs `sqrt()` -- 7x penalty
 
 The n-body inner loop needs `1 / distance`. Distance is `sqrt(dx^2 + dy^2 + dz^2)`. In Python you might write:
 
@@ -21,7 +21,7 @@ from cython.cimports.libc.math import sqrt
 dist = sqrt(dsq)
 ```
 
-This single change: **5x speedup**. No warning, no error, no yellow line in the Cython annotation report. The `**` operator just silently chose the slow path.
+This single change: **7x speedup**. No warning, no error, no yellow line in the Cython annotation report. The `**` operator just silently chose the slow path.
 
 ---
 

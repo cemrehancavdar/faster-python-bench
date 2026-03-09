@@ -11,7 +11,7 @@ Cython n-body implementations exist, so this was written as a translation
 of the baseline with Cython type annotations.
 
 Key insight discovered during development: using dsq**0.5 instead of
-libc.math.sqrt costs 5x silently. Using pair-index arrays instead of
+libc.math.sqrt costs 7x silently. Using pair-index arrays instead of
 nested for loops costs 2x silently. See blog post for the full DX story.
 
 Correctness: Verified against official expected outputs (verify_correctness.py):
