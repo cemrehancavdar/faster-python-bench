@@ -46,24 +46,20 @@ def sn_full_run() -> ti.f64:
     n: ti.i32 = DEFAULT_N
 
     # Initialize u = [1, 1, ...], v = [0, 0, ...]
-    ti.loop_config(serialize=True)
     for i in range(n):
         sn_u[i] = 1.0
         sn_v[i] = 0.0
 
-    # 10 power iterations (must be serial — each depends on the previous)
-    ti.loop_config(serialize=True)
+    # 10 power iterations
     for _iter in range(10):
         # v = A^T * A * u
         # tmp = A * u
-        ti.loop_config(serialize=True)
         for i in range(n):
             s: ti.f64 = 0.0
             for j in range(n):
                 s += sn_eval_A(i, j) * sn_u[j]
             sn_tmp[i] = s
         # v = A^T * tmp
-        ti.loop_config(serialize=True)
         for i in range(n):
             s: ti.f64 = 0.0
             for j in range(n):
@@ -72,14 +68,12 @@ def sn_full_run() -> ti.f64:
 
         # u = A^T * A * v
         # tmp = A * v
-        ti.loop_config(serialize=True)
         for i in range(n):
             s: ti.f64 = 0.0
             for j in range(n):
                 s += sn_eval_A(i, j) * sn_v[j]
             sn_tmp[i] = s
         # u = A^T * tmp
-        ti.loop_config(serialize=True)
         for i in range(n):
             s: ti.f64 = 0.0
             for j in range(n):
@@ -89,7 +83,6 @@ def sn_full_run() -> ti.f64:
     # Compute result
     vBv: ti.f64 = 0.0
     vv: ti.f64 = 0.0
-    ti.loop_config(serialize=True)
     for i in range(n):
         vBv += sn_u[i] * sn_v[i]
         vv += sn_v[i] * sn_v[i]

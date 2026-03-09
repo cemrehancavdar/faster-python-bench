@@ -91,7 +91,7 @@ INIT_DATA = [
 @ti.kernel
 def advance(n: ti.i32):
     dt: ti.f64 = 0.01
-    ti.loop_config(serialize=True)
+    ti.loop_config(serialize=True)  # steps are sequential — each depends on the previous
     for _step in range(n):
         for i in range(NUM_BODIES):
             for j in range(i + 1, NUM_BODIES):

@@ -22,9 +22,9 @@ if _PROJECT_ROOT not in sys.path:
 
 import taichi as ti
 
-# Single-threaded CPU to compare fairly with other single-threaded benchmarks.
+# CPU backend with default thread count (Taichi auto-parallelizes eligible loops).
 # Must be called before importing nbody/spectral_norm (they create fields at import time).
-ti.init(arch=ti.cpu, default_fp=ti.f64, cpu_max_num_threads=1)
+ti.init(arch=ti.cpu, default_fp=ti.f64)
 
 from taichi_benchmark.nbody import DEFAULT_N as NBODY_N  # noqa: E402
 from taichi_benchmark.nbody import run_nbody  # noqa: E402
@@ -35,7 +35,7 @@ RUNS = 5
 
 
 def main() -> None:
-    print("Taichi 1.7.4 (CPU, single-threaded)")
+    print("Taichi 1.7.4 (CPU)")
     print(f"Runs: {RUNS}")
     print()
 
