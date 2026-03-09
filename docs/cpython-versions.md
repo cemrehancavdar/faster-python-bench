@@ -18,7 +18,7 @@ All benchmarks on Apple M4 Pro, median of 5 runs. CPython 3.14 is the baseline.
 
 **3.14 is slightly slower than 3.13** on these benchmarks (1,242ms vs 1,134ms on n-body). This is likely due to internal refactoring for the new JIT infrastructure — a short-term regression that should pay off in future releases.
 
-**Free-threaded Python (3.14t)** is 18-22% slower than regular 3.14 on single-threaded code. The GIL removal requires per-object locking, biased reference counting, and speculative execution guards — all adding overhead to every operation. The payoff only comes with multiple threads doing real parallel work. For CPU-bound single-threaded code, 3.14t is a regression.
+**Free-threaded Python (3.14t)** is slower than regular 3.14 on single-threaded code — up to 22% on n-body, though only 3% on spectral-norm. The GIL removal requires per-object locking and biased reference counting, adding overhead that varies by workload. The payoff only comes with multiple threads doing real parallel work. For CPU-bound single-threaded code, 3.14t is a regression.
 
 ## How to reproduce
 

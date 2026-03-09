@@ -14,7 +14,7 @@ The n-body inner loop needs `1 / distance`. Distance is `sqrt(dx^2 + dy^2 + dz^2
 dist = dsq ** 0.5
 ```
 
-In Cython, this routes through Python's `pow()` -- a generic function that handles arbitrary bases and exponents, checks for complex results, and goes through the Python object protocol. Using `sqrt()` from `libc.math` instead:
+In Cython with typed `cython.double` variables, `** 0.5` generates a call to C's `pow(dsq, 0.5)` — a general-purpose function that handles arbitrary exponents. With untyped variables, it falls back to Python's generic `pow()` which is even slower. Either way, `sqrt()` from `libc.math` is a single hardware instruction:
 
 ```python
 from cython.cimports.libc.math import sqrt
@@ -72,7 +72,7 @@ All of these, applied together:
 
 Every line in the hot loop has score-0 in the annotation report. Getting there required: learning C's mental model, expressing it in Python syntax, and using a separate diagnostic tool to verify the compiler did what you think.
 
-**The Cython pitch is "just add types to Python." The reality is "learn C's mental model, express it in Python syntax, and use a separate diagnostic tool to verify."**
+**Cython promises to make "writing C extensions for Python as easy as Python itself." The reality is: learn C's mental model, express it in Python syntax, and use a separate diagnostic tool to verify.**
 
 ---
 
