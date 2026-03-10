@@ -8,7 +8,7 @@ Attribution:
   (https://benchmarksgame-team.pages.debian.net/benchmarksgame/)
 """
 
-from math import sqrt
+from std.math import sqrt
 
 
 # ---------------------------------------------------------------------------
