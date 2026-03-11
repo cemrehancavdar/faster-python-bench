@@ -161,7 +161,8 @@ def run_benchmark(n: int = DEFAULT_N) -> dict[str, object]:
 
 
 EXPECTED_ENERGY_BEFORE: float = -0.169075164
-EXPECTED_ENERGY_AFTER_500K: float = -0.169078071
+EXPECTED_ENERGY_AFTER_50K: float = -0.169078071
+EXPECTED_ENERGY_AFTER_500K: float = -0.169096567
 
 
 def main() -> None:
