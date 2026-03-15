@@ -36,7 +36,7 @@ struct NBodySystem:
 
     var mass: InlineArray[SIMD[DType.float64, 1], NUM_BODIES]
 
-    fn __init__(out self):
+    def __init__(out self):
         self.pos = InlineArray[SIMD[DType.float64, 4], NUM_BODIES](fill=0.0)
         self.vel = InlineArray[SIMD[DType.float64, 4], NUM_BODIES](fill=0.0)
         self.mass = InlineArray[SIMD[DType.float64, 1], NUM_BODIES](fill=0.0)
@@ -86,7 +86,7 @@ struct NBodySystem:
             p -= self.vel[i] * self.mass[i]
         self.vel[0] = p / SOLAR_MASS
 
-    fn advance(mut self, n: Int):
+    def advance(mut self, n: Int):
         for _ in range(n):
             comptime for i in range(NUM_BODIES):
                 comptime for j in range(i + 1, NUM_BODIES):
@@ -100,7 +100,7 @@ struct NBodySystem:
             comptime for i in range(NUM_BODIES):
                 self.pos[i] += DT * self.vel[i]
 
-    fn energy(self) -> Float64:
+    def energy(self) -> Float64:
         e = 0.0
         comptime for i in range(NUM_BODIES):
             v = self.vel[i]
@@ -112,7 +112,7 @@ struct NBodySystem:
         return e
 
 
-fn run_nbody(n: Int = DEFAULT_N) -> Dict[String, Float64]:
+def run_nbody(n: Int = DEFAULT_N) -> Dict[String, Float64]:
     """Returns [energy_before, energy_after]."""
     var sys = NBodySystem()
     var e_before = sys.energy()

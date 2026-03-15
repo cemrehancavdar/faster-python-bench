@@ -21,7 +21,7 @@ from spectral_norm import run_spectral, DEFAULT_N as SPECTRAL_N
 comptime RUNS = 5
 
 
-fn median(mut values: List[Float64]) -> Float64:
+def median(mut values: List[Float64]) -> Float64:
     """Simple selection sort to find median (only 5 elements)."""
     var n = len(values)
     for i in range(n):
@@ -41,7 +41,7 @@ fn median(mut values: List[Float64]) -> Float64:
 # ---------------------------------------------------------------------------
 
 
-fn main() raises:
+def main() raises:
     print("Mojo nightly (CPU, compiled with -O3)")
     print("Runs:", RUNS)
     print()
