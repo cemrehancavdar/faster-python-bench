@@ -6,8 +6,8 @@ Three tools promise to compile Python (or Python-like code) to native machine co
 |---|---|---|---|---|
 | CPython 3.14 | 1,242ms | 1.0x | 14,046ms | 1.0x |
 | Codon 0.19 | 47ms | **26x** | 99ms | **142x** |
-| Mojo nightly | 16ms | **78x** | 118ms | **119x** |
 | Taichi 1.7 | 16ms | **78x** | 71ms | **198x** |
+| Mojo 0.26.3.0.dev2026031505 | 12ms | **98x** | 118ms | **119x** |
 
 ---
 
