@@ -8,7 +8,7 @@ Run:   /tmp/bench_mojo
   or:  pixi run mojo run bench.mojo
 """
 
-from time import perf_counter_ns
+from std.time import perf_counter_ns
 
 from nbody import run_nbody, DEFAULT_N as NBODY_N
 from spectral_norm import run_spectral, DEFAULT_N as SPECTRAL_N
@@ -21,7 +21,7 @@ from spectral_norm import run_spectral, DEFAULT_N as SPECTRAL_N
 comptime RUNS = 5
 
 
-fn median(mut values: List[Float64]) -> Float64:
+def median(mut values: List[Float64]) -> Float64:
     """Simple selection sort to find median (only 5 elements)."""
     var n = len(values)
     for i in range(n):
@@ -40,7 +40,8 @@ fn median(mut values: List[Float64]) -> Float64:
 # Main
 # ---------------------------------------------------------------------------
 
-fn main():
+
+def main():
     print("Mojo nightly (CPU, compiled with -O3)")
     print("Runs:", RUNS)
     print()
@@ -51,7 +52,7 @@ fn main():
 
     # N-body
     print("  n-body (500000 iterations)...", end=" ")
-    var times_nb = List[Float64]()
+    var times_nb = List[Float64](capacity=RUNS)
     for _ in range(RUNS):
         var t0 = perf_counter_ns()
         _ = run_nbody()
@@ -62,7 +63,7 @@ fn main():
 
     # Spectral-norm
     print("  spectral-norm (N=2000)...", end=" ")
-    var times_sn = List[Float64]()
+    var times_sn = List[Float64](capacity=RUNS)
     for _ in range(RUNS):
         var t0 = perf_counter_ns()
         _ = run_spectral()
