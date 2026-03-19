@@ -49,7 +49,7 @@ struct NBodySystem:
                     var mag = DT / (dsq * sqrt(dsq))
 ```
 
-78x on n-body, 119x on spectral-norm. Competitive with Cython and Numba. But the language is pre-1.0 and moving fast — I hit three breaking changes between the docs and the nightly compiler (`alias` renamed to `comptime`, `InlineArray` initialization syntax changed, `List` requires explicit `^` transfer). It's installed via `pixi` (a conda-based package manager) since Modular distributes Mojo through conda channels rather than pip.
+113x on n-body (with SIMD vectorization + compile-time loop unrolling), 119x on spectral-norm. Ties Rust/Cython on n-body. But the language is pre-1.0 and moving fast — I hit three breaking changes between the docs and the nightly compiler (`alias` renamed to `comptime`, `InlineArray` initialization syntax changed, `List` requires explicit `^` transfer). Mojo is now available on PyPI (`pip install mojo`) and can be installed via `uv`.
 
 **DX verdict: real performance, but it's a new language with a new toolchain. The "Python superset" marketing is aspirational — today it's closer to "Rust with Python syntax."**
 
@@ -57,7 +57,8 @@ struct NBodySystem:
 
 ```bash
 cd mojo_benchmark
-pixi run mojo run bench.mojo
+uv run --prerelease=allow --extra-index-url https://whl.modular.com/nightly/simple/ --with "mojo>=0.26.3.0.dev0" -- mojo build -O3 -o /tmp/bench_mojo bench.mojo
+/tmp/bench_mojo
 ```
 
 ---

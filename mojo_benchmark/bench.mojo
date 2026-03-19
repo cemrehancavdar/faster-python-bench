@@ -3,12 +3,11 @@
 Mojo is a compiled language with Python-like syntax. These implementations
 are direct translations of the official Benchmarks Game algorithms.
 
-Build: pixi run mojo build -O3 -o /tmp/bench_mojo bench.mojo
+Build: uv run --prerelease=allow --extra-index-url https://whl.modular.com/nightly/simple/ --with "mojo>=0.26.3.0.dev0" -- mojo build -O3 -o /tmp/bench_mojo bench.mojo
 Run:   /tmp/bench_mojo
-  or:  pixi run mojo run bench.mojo
 """
 
-from time import perf_counter_ns
+from std.time import perf_counter_ns
 
 from nbody import run_nbody, DEFAULT_N as NBODY_N
 from spectral_norm import run_spectral, DEFAULT_N as SPECTRAL_N
@@ -21,7 +20,7 @@ from spectral_norm import run_spectral, DEFAULT_N as SPECTRAL_N
 comptime RUNS = 5
 
 
-fn median(mut values: List[Float64]) -> Float64:
+def median(mut values: List[Float64]) -> Float64:
     """Simple selection sort to find median (only 5 elements)."""
     var n = len(values)
     for i in range(n):
@@ -40,7 +39,8 @@ fn median(mut values: List[Float64]) -> Float64:
 # Main
 # ---------------------------------------------------------------------------
 
-fn main():
+
+def main() raises:
     print("Mojo nightly (CPU, compiled with -O3)")
     print("Runs:", RUNS)
     print()
@@ -50,32 +50,30 @@ fn main():
     _ = run_spectral()
 
     # N-body
-    print("  n-body (500000 iterations)...", end=" ")
-    var times_nb = List[Float64]()
+    times_nb = List[Float64]()
     for _ in range(RUNS):
-        var t0 = perf_counter_ns()
+        t0 = perf_counter_ns()
         _ = run_nbody()
-        var t1 = perf_counter_ns()
+        t1 = perf_counter_ns()
         times_nb.append(Float64(t1 - t0) / 1_000_000.0)
-    var med_nb = median(times_nb)
-    print(med_nb, "ms")
+    med_nb = median(times_nb)
+    print(t"  n-body (500000 iterations)... {med_nb} ms")
 
     # Spectral-norm
-    print("  spectral-norm (N=2000)...", end=" ")
-    var times_sn = List[Float64]()
+    times_sn = List[Float64]()
     for _ in range(RUNS):
-        var t0 = perf_counter_ns()
+        t0 = perf_counter_ns()
         _ = run_spectral()
-        var t1 = perf_counter_ns()
+        t1 = perf_counter_ns()
         times_sn.append(Float64(t1 - t0) / 1_000_000.0)
-    var med_sn = median(times_sn)
-    print(med_sn, "ms")
+    med_sn = median(times_sn)
+    print(t"  spectral-norm (N=2000)...  {med_sn} ms")
 
     # Correctness
-    var result = run_nbody()
-    var sn = run_spectral()
+    result = run_nbody()
+    sn = run_spectral()
     print()
     print("Correctness:")
-    print("  nbody energy_before:", result[0])
-    print("  nbody energy_after: ", result[1])
-    print("  spectral_norm:      ", sn)
+    print(t"  nbody energy_before: {result["energy_before"]}")
+    print(t"  nbody energy_after:  {result["energy_after"]}")
+    print(t"  spectral_norm:       {sn}")

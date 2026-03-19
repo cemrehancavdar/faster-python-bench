@@ -113,8 +113,8 @@ DYLD_LIBRARY_PATH=~/.codon/lib/codon /tmp/bench_codon
 # Taichi (requires Python 3.13 venv with taichi installed)
 /tmp/taichi-venv/bin/python taichi_benchmark/bench.py
 
-# Mojo (via pixi, from mojo_benchmark/ directory)
-cd mojo_benchmark && pixi run mojo run bench.mojo && cd ..
+# Mojo (via uv, from mojo_benchmark/ directory)
+cd mojo_benchmark && uv run --prerelease=allow --extra-index-url https://whl.modular.com/nightly/simple/ --with "mojo>=0.26.3.0.dev0" -- mojo build -O3 -o /tmp/bench_mojo bench.mojo && /tmp/bench_mojo && cd ..
 ```
 
 ## Project structure
